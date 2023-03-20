@@ -10,11 +10,27 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const twilioClient = twilio(accountSid, authToken);
 
+export async function fetchAllUsers() {
+  return await User.find({});
+}
+
 export async function createUser(data) {
   const existingUser = await User.findOne({ phoneNumber: data.phoneNumber });
   if (existingUser) {
     return { status: "Error", message: "Mobile Number already exists" };
     // throw new Error("Mobile Number already exists");
+  }
+  if (data.phoneNumber !== Number && data.phoneNumber.length < 10) {
+    return {
+      status: "Error",
+      message: "Please Enter Valid 10 digit Phone Number",
+    };
+  }
+  if (data.phoneNumber.length > 10) {
+    return {
+      status: "Error",
+      message: "Please Enter Valid 10 digit Phone Number",
+    };
   }
   let users = [];
   users.push(data);

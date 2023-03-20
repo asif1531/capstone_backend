@@ -1,10 +1,19 @@
 import jwt from "jsonwebtoken";
 import {
   createUser,
+  fetchAllUsers,
   sendOTPService,
   verifyOTPService,
 } from "../services/userService.js";
 
+export async function fetchAllUsersHandler(req, res) {
+  try {
+    const user = await fetchAllUsers();
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).send("Failed to fetch all user", err);
+  }
+}
 export async function createUserHandler(req, res) {
   try {
     const user = await createUser(req.body);
