@@ -5,7 +5,7 @@ const meetingSchema = new mongoose.Schema({
   requester: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+    required: false,
   },
   receiver: {
     type: mongoose.Schema.Types.ObjectId,
@@ -16,15 +16,15 @@ const meetingSchema = new mongoose.Schema({
     type: String,
     enum: ["pending", "accepted", "rejected"],
     default: "pending",
-    required: true,
+    required: false,
   },
   startDateTime: {
     type: Date,
-    required: true,
+    required: false,
   },
   endDateTime: {
     type: Date,
-    required: true,
+    required: false,
   },
 });
 

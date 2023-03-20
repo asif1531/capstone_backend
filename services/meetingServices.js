@@ -7,14 +7,14 @@ export async function createMeeting(
   startDateTime,
   endDateTime
 ) {
-  let user = await User.findOne({ _id: requesterId });
+  let user = await User.findById(receiverId);
   if (!user) {
     throw new Error("User not found");
   }
   let userId = user._id;
   const meeting = new Meeting({
-    requester: userId,
-    receiver: receiverId,
+    requester: requesterId,
+    receiver: userId,
     startDateTime: startDateTime,
     endDateTime: endDateTime,
   });
