@@ -2,7 +2,7 @@ import express from "express";
 import {
   acceptMeetingRequestHandler,
   rejectMeetingRequestHandler,
-  sendMeetingRequestHandler,
+  createMeetingHandler,
 } from "./controllers/meetingController.js";
 import {
   createUserHandler,
@@ -21,15 +21,15 @@ router.post("/api/verifyOtp", verifyOTPHandler);
 
 //Meetings routes
 
-router.post("/api/meetings", authenticate, sendMeetingRequestHandler);
+router.post("/api/meetings", authenticate, createMeetingHandler);
 
-router.patch(
+router.put(
   "/api/meetings/:id/accept",
   authenticate,
   acceptMeetingRequestHandler
 );
 
-router.patch(
+router.put(
   "/api/meetings/:id/reject",
   authenticate,
   rejectMeetingRequestHandler

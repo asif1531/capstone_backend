@@ -1,23 +1,23 @@
 import mongoose from "mongoose";
-import User from "./user.js";
 
-const inviteesSchema = new mongoose.Schema({
-  meetingID: {
+const inviteeSchema = new mongoose.Schema({
+  meetingId: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Meeting",
+    },
+  ],
+  user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Meeting",
-    required: true,
+    ref: "User",
   },
   status: {
-    type: {
-      status: {
-        accept: String,
-        reject: String,
-      },
-    },
-    required: false,
+    type: String,
+    enum: ["pending", "accepted", "rejected"],
+    default: "pending",
   },
 });
 
-const Invitees = mongoose.model("Invitees", inviteesSchema);
+const Invitee = mongoose.model("Invitee", inviteeSchema);
 
-export default Invitees;
+export default Invitee;

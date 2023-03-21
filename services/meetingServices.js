@@ -1,78 +1,68 @@
 import Meeting from "../models/meetings.js";
-import User from "../models/user.js";
+import Invitee from "../models/invitees.js";
 
-// export async function createMeeting(
-//   username,
-//   meetingDesc,
-//   requesterId,
-//   receiverId,
-//   startDateTime,
-//   endDateTime
-// ) {
-//   let user = await User.find({ username: username });
-//   if (!user) {
-//     throw new Error("User not found");
-//   }
+export async function createMeeting(
+  // meetingDesc,
+  requesterId,
+  receiverIds,
+  startDateTime,
+  endDateTime
+) {
+  try {
+    const meeting = await Meeting.create({
+      // meetingDesc,
+      requesterId,
+      receiverIds,
+      startDateTime,
+      endDateTime,
+    });
 
-//   const meeting = new Meeting({
-//     meetingDesc: meetingDesc,
-//     requester: requesterId,
-//     receiver: receiverId,
-//     startDateTime: startDateTime,
-//     endDateTime: endDateTime,
-//   });
-//   let userId = [];
-//   userId.push(receiverId);
-//   return await Meeting.insertMany(meeting);
+    // Add meeting to invitees of each receiver
+    for (const receiverId of receiverIds) {
+      await Invitee.create({
+        meetingId: meeting._id,
 
-//   // await meeting.save();
-//   // return meeting;
-// }
+        receiverId,
+        status: "pending",
+      });
+    }
 
-// export async function createMeeting(data) {
-//   let user = await User.find({ username: data.username });
-//   if (!user) {
-//     return {
-//       status: "error",
-//       message: "User not found in our database",
-//     };
-//     // throw new Error("User not found");
-//   }
-//   let receiverIds = data.receiverId;
-//   data.receiverId = receiverIds;
-//   let meetings = [];
-//   meetings.push(data);
-//   return await Meeting.insertMany(data);
-// }
-
-export async function createMeeting(data) {
-  let user = await User.findOne({ phoneNumber: data.phoneNumber });
-  if (!user) {
-    return {
-      status: "error",
-      message: "User not found in our database",
-    };
+    return meeting;
+  } catch (error) {
+    console.error(error);
+    return { status: "error", message: "Error while creating meeting" };
   }
-
-  const meeting = new Meeting({
-    meetingDesc: data.meetingDesc,
-    requester: data.requesterId,
-    receiver: data.receiverId,
-    startDateTime: data.startDateTime,
-    endDateTime: data.endDateTime,
-  });
-
-  const createdMeeting = await meeting.save();
-  return createdMeeting;
 }
 
-export async function getMeetingById(meetingId) {
-  return await Meeting.findById(meetingId);
-}
+export async function updateMeetingStatus(meetingId, receiverId, status) {
+  try {
+    const invitee = await Invitee.findOneAndUpdate(
+      { meetingId, receiverId },
+      { status },
+      { new: true }
+    ).populate("meetingId");
 
-export async function updateMeetingStatus(meetingId, newStatus) {
-  const meeting = await getMeetingById(meetingId);
-  meeting.status = newStatus;
-  await meeting.save();
-  return meeting;
+    if (!invitee) {
+      return { status: "error", message: "Invitee not found" };
+    }
+
+    // Check if all invitees have accepted/rejected the meeting
+    const allInvitees = await Invitee.find({ meetingId });
+    const allInviteesStatuses = allInvitees.map((invitee) => invitee.status);
+    if (!allInviteesStatuses.includes("pending")) {
+      const meeting = await Meeting.findByIdAndUpdate(
+        meetingId,
+        { status: "completed" },
+        { new: true }
+      )
+        .populate("requesterId")
+        .populate("receiverIds");
+      return meeting;
+    }
+
+    return invitee.meetingId;
+  } catch (error) {
+    console.error(error);
+    return { status: "error", message: "Error updating meeting status" };
+  }
 }
