@@ -14,9 +14,9 @@ export async function createMeetingHandler(req, res) {
       endDateTime
     );
 
-    if (meeting.status === "error") {
-      return res.status(400).json({ message: meeting.message });
-    }
+    // if (meeting.status === "error") {
+    //   return res.status(400).json({ message: meeting.message });
+    // }
 
     res.status(201).json(meeting);
   } catch (error) {
@@ -48,8 +48,14 @@ export async function updateMeetingStatusHandler(req, res) {
 
 export async function acceptMeetingRequestHandler(req, res) {
   try {
-    const meetingId = req.params.id;
-    const updatedMeeting = await updateMeetingStatus(meetingId, "accepted");
+    const meetingId = req.params.meetingId;
+    const receiverId = req.body.receiverId;
+    const status = req.body.status;
+    const updatedMeeting = await updateMeetingStatus(
+      meetingId,
+      receiverId,
+      "accepted"
+    );
 
     if (!updatedMeeting) {
       return res.status(404).json({ message: "Meeting not found" });

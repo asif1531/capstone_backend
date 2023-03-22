@@ -24,7 +24,7 @@ router.post("/api/verifyOtp", verifyOTPHandler);
 router.post("/api/meetings", authenticate, createMeetingHandler);
 
 router.put(
-  "/api/meetings/:id/accept",
+  "/api/meetings/:meetingId/accept",
   authenticate,
   acceptMeetingRequestHandler
 );

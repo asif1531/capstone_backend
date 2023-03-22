@@ -21,7 +21,6 @@ export async function createMeeting(
     for (const receiverId of receiverIds) {
       await Invitee.create({
         meetingId: meeting._id,
-
         receiverId,
         status: "pending",
       });
@@ -35,6 +34,7 @@ export async function createMeeting(
 }
 
 export async function updateMeetingStatus(meetingId, receiverId, status) {
+  console.log(meetingId, receiverId, status);
   try {
     const invitee = await Invitee.findOneAndUpdate(
       { meetingId, receiverId },
@@ -42,13 +42,18 @@ export async function updateMeetingStatus(meetingId, receiverId, status) {
       { new: true }
     ).populate("meetingId");
 
+    console.log(invitee);
     if (!invitee) {
       return { status: "error", message: "Invitee not found" };
     }
 
     // Check if all invitees have accepted/rejected the meeting
     const allInvitees = await Invitee.find({ meetingId });
+
+    console.log("Demo", allInvitees);
+
     const allInviteesStatuses = allInvitees.map((invitee) => invitee.status);
+    console.log("second", allInviteesStatuses);
     if (!allInviteesStatuses.includes("pending")) {
       const meeting = await Meeting.findByIdAndUpdate(
         meetingId,

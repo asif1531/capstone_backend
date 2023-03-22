@@ -1,13 +1,11 @@
 import mongoose from "mongoose";
 
 const inviteeSchema = new mongoose.Schema({
-  meetingId: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Meeting",
-    },
-  ],
-  user: {
+  meetingId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Meeting",
+  },
+  receiverId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
