@@ -1,38 +1,58 @@
 import express from "express";
 import {
-  acceptMeetingRequestHandler,
-  rejectMeetingRequestHandler,
+  // acceptMeetingRequestHandler,
+  // rejectMeetingRequestHandler,
   createMeetingHandler,
+  getAllMeetingController,
+  updateMeetingStatusController,
+  updatemeetingController,
 } from "./controllers/meetingController.js";
 import {
+  // createUserController,
   createUserHandler,
+  // createUserHandler,
   fetchAllUsersHandler,
+  getUserByIdController,
   sendOTPHandler,
   verifyOTPHandler,
 } from "./controllers/userController.js";
 import { authenticate } from "./auth.js";
+import { findLocationController } from "./controllers/locationController.js";
+import { getAllInviteesController } from "./controllers/invitessController.js";
 
 const router = express.Router();
 
-router.get("/api/allUsers", fetchAllUsersHandler);
-router.post("/api/signUp", createUserHandler);
-router.post("/api/signIn", sendOTPHandler);
-router.post("/api/verifyOtp", verifyOTPHandler);
+//User Routes
+router.get("/api/getallUsers", fetchAllUsersHandler);
+router.post("/api/getUsers", getUserByIdController);
+router.post("/api/createUser", createUserHandler);
+router.post("/api/otpgenerator", sendOTPHandler);
+router.post("/api/otpverification", verifyOTPHandler);
+router.post("/api/getLocation", findLocationController);
 
 //Meetings routes
-
-router.post("/api/meetings", authenticate, createMeetingHandler);
-
-router.put(
-  "/api/meetings/:meetingId/accept",
+router.get("/api/getAllMeetings", getAllMeetingController);
+router.post("/api/createMeetings", authenticate, createMeetingHandler);
+router.post(
+  "/api/updateStatusMeeting",
   authenticate,
-  acceptMeetingRequestHandler
-);
+  updateMeetingStatusController
+); //..........
+router.post("/api/UpdateMeeting", authenticate, updatemeetingController);
 
-router.put(
-  "/api/meetings/:id/reject",
-  authenticate,
-  rejectMeetingRequestHandler
-);
+// router.put(
+//   "/api/meetings/:meetingId/accept",
+//   authenticate,
+//   acceptMeetingRequestHandler
+// );
+
+// router.put(
+//   "/api/meetings/:id/reject",
+//   authenticate,
+//   rejectMeetingRequestHandler
+// );
+
+//Invitees
+router.get("/api/getallInvitees", getAllInviteesController);
 
 export { router as routes };

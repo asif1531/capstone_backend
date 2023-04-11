@@ -4,10 +4,15 @@ const { Schema } = mongoose;
 
 const meetingSchema = new Schema(
   {
-    // meetingDesc: {
-    //   type: String,
-    //   required: true,
-    // },
+    meetingName: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     requesterId: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -21,19 +26,24 @@ const meetingSchema = new Schema(
       },
     ],
     startDateTime: {
-      type: Date,
-      required: true,
+      type: Number,
+      required: false,
     },
     endDateTime: {
-      type: Date,
-      required: true,
+      type: Number,
+      required: false,
     },
     status: {
       type: String,
       enum: ["pending", "accepted", "rejected"],
       default: "pending",
     },
+    timeStatus: {
+      type: String,
+      trim: true,
+    },
   },
+
   { timestamps: true }
 );
 

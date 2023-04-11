@@ -14,6 +14,30 @@ export async function fetchAllUsersHandler(req, res) {
     res.status(500).send("Failed to fetch all user", err);
   }
 }
+
+export async function getUserByIdController(req, res) {
+  // let id=req.body
+  try {
+    let user = await getUserById(req.body);
+    return res.status(200).send(user);
+  } catch (e) {
+    return res.status(500).send("Error while geting User id of ", e);
+  }
+}
+
+// export async function createUserHandler(req, res) {
+//   try {
+//     const user = await createUser(req.body);
+//     if (user.status === "error") {
+//       return res.status(401).json({ message: user.message });
+//     } else {
+//       return res.status(200).json(user);
+//     }
+//   } catch (err) {
+//     res.status(500).json("Error While Creating User", err);
+//   }
+// }
+
 export async function createUserHandler(req, res) {
   try {
     const user = await createUser(req.body);
@@ -23,20 +47,20 @@ export async function createUserHandler(req, res) {
       return res.status(200).json(user);
     }
   } catch (err) {
-    res.status(500).send("Error While Creating User", err);
+    res.status(500).json(`Error While Creating User ${err}`);
   }
 }
 
 export async function sendOTPHandler(req, res) {
   try {
-    const { phoneNumber } = req.body;
-    if (!phoneNumber) {
+    const { phonNumber } = req.body;
+    if (!phonNumber) {
       return res
         .status(400)
         .json({ message: "Phone number is required to send OTP" });
     }
 
-    const result = await sendOTPService(phoneNumber);
+    const result = await sendOTPService(phonNumber);
 
     return res.status(200).json({ message: result });
   } catch (error) {
@@ -49,9 +73,9 @@ export async function sendOTPHandler(req, res) {
 
 export async function verifyOTPHandler(req, res) {
   try {
-    const { phoneNumber, otp } = req.body;
+    const { phonNumber, otp } = req.body;
 
-    if (!phoneNumber) {
+    if (!phonNumber) {
       return res
         .status(400)
         .json({ message: "Phone number is required to verify OTP" });
@@ -61,7 +85,7 @@ export async function verifyOTPHandler(req, res) {
       return res.status(400).json({ message: "OTP is required to verify OTP" });
     }
 
-    const user = await verifyOTPService(phoneNumber, otp);
+    const user = await verifyOTPService(phonNumber, otp);
     if (user.status === "error") {
       return res.status(401).send(user.message);
     } else {

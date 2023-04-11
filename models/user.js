@@ -2,20 +2,24 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    username: {
+    fname: {
       type: String,
       required: true,
     },
-    phoneNumber: {
+    phonNumber: {
       type: String,
       required: true,
-      unique: true,
-      uniqueCaseInsensitive: true,
+      // unique: true,
+      // uniqueCaseInsensitive: true,
       // unique: [true, "Mobile Number is already exist"],
     },
     otp: {
       type: String,
       // required: true,
+    },
+    Location: {
+      lat: String,
+      long: String,
     },
   },
   { timestamps: true }

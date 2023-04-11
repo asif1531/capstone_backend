@@ -15,18 +15,18 @@ export async function fetchAllUsers() {
 }
 
 export async function createUser(data) {
-  const existingUser = await User.findOne({ phoneNumber: data.phoneNumber });
+  const existingUser = await User.findOne({ phonNumber: data.phonNumber });
   if (existingUser) {
     return { status: "Error", message: "Mobile Number already exists" };
     // throw new Error("Mobile Number already exists");
   }
-  if (data.phoneNumber !== Number && data.phoneNumber.length < 10) {
+  if (data.phonNumber !== Number && data.phonNumber.length < 10) {
     return {
       status: "Error",
       message: "Please Enter Valid 10 digit Phone Number",
     };
   }
-  if (data.phoneNumber.length > 10) {
+  if (data.phonNumber.length > 10) {
     return {
       status: "Error",
       message: "Please Enter Valid 10 digit Phone Number",
@@ -37,9 +37,9 @@ export async function createUser(data) {
   return await User.insertMany(data);
 }
 
-export async function sendOTPService(phoneNumber) {
+export async function sendOTPService(phonNumber) {
   try {
-    const user = await User.findOne({ phoneNumber });
+    const user = await User.findOne({ phonNumber });
     if (!user) {
       return {
         status: "Error",
@@ -47,7 +47,7 @@ export async function sendOTPService(phoneNumber) {
       };
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
     const hashedOTP = await bcrypt.hash(otp, 10);
 
     user.otp = hashedOTP;
@@ -58,8 +58,8 @@ export async function sendOTPService(phoneNumber) {
     await twilioClient.messages.create({
       body: message,
       from: process.env.TWILIO_PHONE_NUMBER,
-      // to: phoneNumber,
-      to: `+91${phoneNumber}`,
+      // to: phonNumber,
+      to: `+91${phonNumber}`,
     });
 
     return otp;
@@ -69,9 +69,9 @@ export async function sendOTPService(phoneNumber) {
   }
 }
 
-export async function verifyOTPService(phoneNumber, otp) {
+export async function verifyOTPService(phonNumber, otp) {
   try {
-    const user = await User.findOne({ phoneNumber: phoneNumber });
+    const user = await User.findOne({ phonNumber: phonNumber });
     if (!user) {
       return {
         status: "Error",
@@ -88,21 +88,19 @@ export async function verifyOTPService(phoneNumber, otp) {
       // throw new Error("Invalid OTP");
     }
 
-    // if (!user) {
-    //   return res.status(400).json({ message: "Invalid OTP" });
-    // }
-
-    // // const token = jwt.sign({ name: user.name }, process.env.JWT_SECRET_KEY, {
-    // //   expiresIn: "1d",
-    // // });
-
     const token = jwt.sign(
       { name: user.username },
       `${process.env.JWT_SECRET_KEY}`,
       { expiresIn: "1h" }
     );
 
-    return { success: "Success", message: token };
+    let datatosend = {
+      fname: user.fname,
+      phonNumber: user.phonNumber,
+      _id: user._id,
+      token: token,
+    };
+    return { success: "Success", message: datatosend };
   } catch (error) {
     console.log(error);
     throw error;
