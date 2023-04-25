@@ -2,7 +2,7 @@ import Meeting from "../models/meetings.js";
 import Invitee from "../models/invitees.js";
 
 export async function getAllMeetings() {
-  return await Meeting.find({});
+  return await Meeting.find({}).sort({ createdAt: -1 });
 }
 
 export async function createMeeting(
@@ -60,7 +60,7 @@ export async function UpdateMeeting(data) {
   // let {meetingName,_id} = data;
 
   try {
-    let meetingData = await Meetings.findById(_id);
+    let meetingData = await Meeting.findById(_id);
     console.log(meetingData);
     if (!meetingData) {
       return { status: "error", message: "Meeting is not find fro update" };
@@ -88,7 +88,7 @@ export async function UpdateMeeting(data) {
           meetingData.receiverIds.concat(uniqueReceiverIds);
 
         for (const receiver of uniqueReceiverIds) {
-          await Invitess.create({
+          await Invitee.create({
             meetingId: meetingData._id,
             receiverId: receiver,
             status: "pending",
@@ -155,7 +155,7 @@ export async function updateMeetingStatus(meetingId, receiverId, status) {
   try {
     // let {meetingId, receiverId, status}=updatedata;
 
-    let invitess = await Invitess.findOneAndUpdate(
+    let invitess = await Invitee.findOneAndUpdate(
       { meetingId, receiverId },
       { status },
       { new: true }
@@ -166,12 +166,12 @@ export async function updateMeetingStatus(meetingId, receiverId, status) {
     if (!invitess) {
       return { status: "error", message: "invitess not finde" };
     }
-    let allInviteess = await Invitess.find({ meetingId });
+    let allInviteess = await Invitee.find({ meetingId });
 
     let allInviteessStatues = allInviteess.map((invitess) => invitess.status);
 
     if (!allInviteessStatues.includes("pending")) {
-      let meeting = await Meetings.findByIdAndUpdate(
+      let meeting = await Meeting.findByIdAndUpdate(
         meetingId,
         { status: "completed" },
         { new: true }

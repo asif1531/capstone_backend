@@ -38,7 +38,7 @@ router.post(
   authenticate,
   updateMeetingStatusController
 ); //..........
-router.post("/api/UpdateMeeting", authenticate, updatemeetingController);
+router.post("/api/updateMeeting", authenticate, updatemeetingController);
 
 // router.put(
 //   "/api/meetings/:meetingId/accept",
